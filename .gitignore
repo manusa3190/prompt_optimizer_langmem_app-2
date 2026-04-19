@@ -1,0 +1,40 @@
+# アプリのローカル状態（テンプレは data/state.json.example）
+data/state.json
+
+# 仮想環境
+.venv/
+venv/
+ENV/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# 型チェック・テスト・カバレッジ
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# ビルド・配布物
+dist/
+build/
+*.egg-info/
+
+# 環境変数・シークレット（API キーなど）
+.env
+.env.*
+!.env.example
+
+# Streamlit のローカルシークレット
+.streamlit/secrets.toml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# エディタ・IDE（チーム共有する設定だけ追跡したい場合は調整）
+.idea/
