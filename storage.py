@@ -38,8 +38,8 @@ def ensure_db() -> None:
         return
     initial = {
         "settings": {
-            "generation_model": "gpt-5.2-mini",
-            "optimizer_model": "openai:gpt-5.2-mini",
+            "generation_model": "gpt-5.4-mini",
+            "optimizer_model": "openai:gpt-5.4-mini",
             "optimizer_kind": "gradient",
         },
         "prompts": [

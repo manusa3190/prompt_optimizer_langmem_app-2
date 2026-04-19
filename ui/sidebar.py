@@ -2,8 +2,8 @@ import streamlit as st
 
 from storage import update_settings
 
-DEFAULT_GENERATION_MODEL = "gpt-5-mini"
-DEFAULT_OPTIMIZER_MODEL = "openai:gpt-5-mini"
+DEFAULT_GENERATION_MODEL = "gpt-5.4-mini"
+DEFAULT_OPTIMIZER_MODEL = "openai:gpt-5.4-mini"
 DEFAULT_OPTIMIZER_KIND = "gradient"
 
 
