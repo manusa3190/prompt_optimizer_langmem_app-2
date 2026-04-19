@@ -1,7 +1,8 @@
+import difflib
+
 import streamlit as st
 
 from optimizer import evaluation_to_trajectory
-from services.workbench import build_change_summary, build_unified_diff
 from storage import (
     add_prompt_version,
     delete_evaluation,
@@ -12,6 +13,30 @@ from storage import (
 )
 
 DEFAULT_OPTIMIZER_MODEL = "openai:gpt-5-mini"
+
+
+def _build_unified_diff(old: str, new: str) -> str:
+    return "\n".join(
+        difflib.unified_diff(
+            old.splitlines(),
+            new.splitlines(),
+            fromfile="before",
+            tofile="after",
+            lineterm="",
+        )
+    )
+
+
+def _build_change_summary(old: str, new: str) -> list[str]:
+    summary, added, removed = [], [], []
+    for line in difflib.ndiff(old.splitlines(), new.splitlines()):
+        if line.startswith("+ ") and line[2:].strip():
+            added.append(line[2:].strip())
+        elif line.startswith("- ") and line[2:].strip():
+            removed.append(line[2:].strip())
+    summary += [f"追加: {x}" for x in added[:5]]
+    summary += [f"削除: {x}" for x in removed[:5]]
+    return summary or (["変更なし"] if old == new else ["差分あり"])
 
 
 def _optimize_prompt(state, selected_prompt, edited_prompt, settings, optimizer_kind):
@@ -28,8 +53,8 @@ def _optimize_prompt(state, selected_prompt, edited_prompt, settings, optimizer_
         optimizer_kind=settings.get("optimizer_kind", optimizer_kind),
     )
 
-    diff_text = build_unified_diff(edited_prompt, optimized_prompt)
-    change_summary = build_change_summary(edited_prompt, optimized_prompt)
+    diff_text = _build_unified_diff(edited_prompt, optimized_prompt)
+    change_summary = _build_change_summary(edited_prompt, optimized_prompt)
 
     created = add_prompt_version(
         state,
@@ -63,7 +88,7 @@ def _render_diff_section(state, selected_prompt, prompts_desc, prompt_options):
         )
 
     base_prompt = get_prompt_by_id(state, prompt_options[selected_diff_label])
-    diff_text = build_unified_diff(base_prompt["content"], selected_prompt["content"])
+    diff_text = _build_unified_diff(base_prompt["content"], selected_prompt["content"])
 
     st.caption(f"{selected_diff_label} ↓ {f'v{selected_prompt['version']}'}")
     st.code(diff_text if diff_text else "(差分なし)", language="diff")
